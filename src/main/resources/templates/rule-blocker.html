@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <link rel="icon" href="/images/favicon.png" type="image/gif" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <meta name="_csrf" th:content="${_csrf.token}" />
+
+  <title>Firewall - Dashboard</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+
+  <!-- fonts style -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet" />
+
+  <!-- font awesome style -->
+  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+  <!-- owl carousel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha256-UhQQ4fxEeABh4JrcmAJ1+16id/1dnlOEVCFOxDef9Lw=" crossorigin="anonymous" />
+  <!-- Custom styles for this template -->
+  <link href="/css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="/css/responsive.css" rel="stylesheet" />
+
+</head>
+
+<body>
+
+<!-- header section strats -->
+<header class="header_section ">
+  <div class="container-fluid" style="border: 1px solid grey;">
+    <nav class="navbar navbar-expand-lg custom_nav-container ">
+      <a class="navbar-brand" href="index.html">
+            <span>
+              Firewall - ADMIN
+            </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class=""> </span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="d-flex mx-auto flex-column flex-lg-row align-items-center">
+          <ul class="navbar-nav  ">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" th:href="@{ /rules/ }"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Rules</a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" th:href="@{ /rules/new/ }">New Rule</a>
+                <a class="dropdown-item" th:href="@{ /rules/ }">View Rules</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="quote_btn-container">
+          <a th:href="@{ /logout }">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+<!-- end header section -->
+
+
+
+<!-- about section -->
+<section class="about_section layout_padding-top">
+
+  <div class="custom-border-bottom py-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 mb-0"><a href="#">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Set Rules</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- contact section -->
+<section class="contact_section layout_padding ">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <div class="form_container">
+          <form>
+            <fieldset style="border: 3px solid #0e3746; padding: 30px; border-radius: 10px;">
+              <legend style="width: max-content; padding: 10px;">Block IP</legend>
+                <div class="form-group">
+                  <input type="text" placeholder="Enter an IP" id="ipAddr" required/>
+                </div>
+                <div class="form-group">
+                  <select class="form-control" id="hostTypeIp">
+                    <option th:each="host : ${hostType}" th:value="${host}" th:text="${host}" required></option>
+                  </select>
+                </div>
+                <div class="form-group">
+                <input type="button" value="Block IP" onclick="blockIP()"/>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="form_container">
+          <form>
+            <fieldset style="border: 3px solid #0e3746; padding: 30px; border-radius: 10px;">
+              <legend style="width: max-content; padding: 10px;">Block Protocol</legend>
+              <div class="form-group">
+                <input type="text" placeholder="Enter the Port" id="portNum" required/>
+              </div>
+              <div class="form-group">
+                <select class="form-control" id="hostTypePort">
+                  <option th:each="host : ${hostType}" th:value="${host}" th:text="${host}"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <input type="button" value="Block Port" onclick="blockPort()"/>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+
+
+      <div class="col-4">
+        <div class="form_container">
+          <form>
+            <fieldset style="border: 3px solid #0e3746; padding: 30px; border-radius: 10px;">
+              <legend style="width: max-content; padding: 10px;">Block Protocol</legend>
+                <div class="form-group">
+                  <select class="form-control" id="protocol">
+                    <option th:each="protocol : ${protocols}" th:value="${protocol}" th:text="${protocol}">HTTP</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <input type="button" value="Block Protocol" onclick="blockProtocol()"/>
+                </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <div class="form_container">
+          <form>
+            <fieldset style="border: 3px solid #0e3746; padding: 30px; border-radius: 10px;">
+              <legend style="width: max-content; padding: 10px;">Limit Requests</legend>
+              <div class="form-group">
+                <input type="text" placeholder="Enter an IP" id="ipAddrLR" required/>
+              </div>
+              <div class="form-group">
+                <input type="number" placeholder="Enter the minutes" id="minLR" required/>
+              </div>
+              <div class="form-group">
+                <input type="number" placeholder="Enter the requests" id="reqLR" required/>
+              </div>
+              <div class="form-group">
+                <input type="button" value="Block IP" onclick="blockReqPerMin()"/>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- end about section -->
+
+<!-- info section -->
+<section class="info_section ">
+
+  <div class="container">
+    <div class="info_top ">
+      <div class="row ">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="info_detail">
+            <a href="index.html">
+              <h4>
+                Firewall
+              </h4>
+            </a>
+            <p>
+              Departmental Store Management System
+            </p>
+            <div class="social_box">
+              <a href="">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-twitter" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-linkedin" aria-hidden="true"></i>
+              </a>
+              <a href="">
+                <i class="fa fa-instagram" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 mx-auto">
+          <h4>
+            Contact us
+          </h4>
+          <p>
+            If any queries ? contact the administrator.
+          </p>
+          <div class="contact_nav">
+            <a href="">
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              <span>
+                  Denton, TX
+                </span>
+            </a>
+            <a href="">
+              <i class="fa fa-phone" aria-hidden="true"></i>
+              <span>
+                  Call : +01 7373030815
+                </span>
+            </a>
+            <a href="">
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              <span>
+                  Email : admin1@gmail.com
+                </span>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="info_form">
+            <h4>
+              SIGN UP TO OUR NEWSLETTER
+            </h4>
+            <form action="">
+              <input type="text" placeholder="Enter Your Email" />
+              <button type="submit">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- end info_section -->
+
+
+<!-- footer section -->
+<footer class="footer_section">
+  <div class="container">
+    <p>
+      &copy; <span id="displayYear"></span> All Rights Reserved By
+      <a href="/">Firewall</a>
+    </p>
+  </div>
+</footer>
+<!-- footer section -->
+
+
+<!-- jQery -->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+  (function ($) {
+    $.fn.countTo = function (options) {
+      options = options || {};
+
+      return $(this).each(function () {
+        // set options for current element
+        var settings = $.extend({}, $.fn.countTo.defaults, {
+          from:            $(this).data('from'),
+          to:              $(this).data('to'),
+          speed:           $(this).data('speed'),
+          refreshInterval: $(this).data('refresh-interval'),
+          decimals:        $(this).data('decimals')
+        }, options);
+
+        // how many times to update the value, and how much to increment the value on each update
+        var loops = Math.ceil(settings.speed / settings.refreshInterval),
+                increment = (settings.to - settings.from) / loops;
+
+        // references & variables that will change with each update
+        var self = this,
+                $self = $(this),
+                loopCount = 0,
+                value = settings.from,
+                data = $self.data('countTo') || {};
+
+        $self.data('countTo', data);
+
+        // if an existing interval can be found, clear it first
+        if (data.interval) {
+          clearInterval(data.interval);
+        }
+        data.interval = setInterval(updateTimer, settings.refreshInterval);
+
+        // initialize the element with the starting value
+        render(value);
+
+        function updateTimer() {
+          value += increment;
+          loopCount++;
+
+          render(value);
+
+          if (typeof(settings.onUpdate) == 'function') {
+            settings.onUpdate.call(self, value);
+          }
+
+          if (loopCount >= loops) {
+            // remove the interval
+            $self.removeData('countTo');
+            clearInterval(data.interval);
+            value = settings.to;
+
+            if (typeof(settings.onComplete) == 'function') {
+              settings.onComplete.call(self, value);
+            }
+          }
+        }
+
+        function render(value) {
+          var formattedValue = settings.formatter.call(self, value, settings);
+          $self.html(formattedValue);
+        }
+      });
+    };
+
+    $.fn.countTo.defaults = {
+      from: 0,               // the number the element should start at
+      to: 0,                 // the number the element should end at
+      speed: 1000,           // how long it should take to count between the target numbers
+      refreshInterval: 100,  // how often the element should be updated
+      decimals: 0,           // the number of decimal places to show
+      formatter: formatter,  // handler for formatting the value before rendering
+      onUpdate: null,        // callback method for every time the element is updated
+      onComplete: null       // callback method for when the element finishes updating
+    };
+
+    function formatter(value, settings) {
+      return value.toFixed(settings.decimals);
+    }
+  }(jQuery));
+
+  jQuery(function ($) {
+    // custom formatting example
+    $('.count-number').data('countToOptions', {
+      formatter: function (value, options) {
+        return value.toFixed(options.decimals).replace(/\B(?=(?:\d{3})+(?!\d))/g, ',');
+      }
+    });
+
+    // start all the timers
+    $('.timer').each(count);
+
+    function count(options) {
+      var $this = $(this);
+      options = $.extend({}, options || {}, $this.data('countToOptions') || {});
+      $this.countTo(options);
+    }
+  });
+</script>
+<!-- bootstrap js -->
+<script src="/js/bootstrap.js"></script>
+<!-- owl carousel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+
+    function blockReqPerMin() {
+
+        jsonData = {
+            ipAddress : $("#ipAddrLR").val(),
+            requests : $("#minLR").val(),
+            minutes : $("#reqLR").val()
+        }
+
+        postRequest("/firewall/limit-requests/", jsonData);
+    }
+
+  function blockIP() {
+
+    jsonData = {
+      ipAddress : $("#ipAddr").val(),
+      hostType : $("#hostTypeIp").val()
+    }
+
+    postRequest("/firewall/block-ip/", jsonData);
+  }
+
+  function blockPort() {
+
+    jsonData = {
+      portNumber : $("#portNum").val(),
+      hostType : $("#hostTypePort").val()
+    }
+
+    postRequest("/firewall/block-port/", jsonData);
+  }
+
+  function blockProtocol() {
+
+    jsonData = {
+      protocol : $("#protocol").val()
+    }
+
+    postRequest("/firewall/block-protocol/", jsonData);
+  }
+
+  function postRequest(targetUrl, jsonData) {
+    // alert(itemId + "-" + document.getElementById("qty_" + itemId).value);
+    $.post({
+      url: targetUrl,
+      contentType: "application/json",
+      headers: {
+        'X-CSRF-TOKEN': getCsrfToken()
+      },
+      data: JSON.stringify(jsonData),
+      success: function(response) {
+        alert(response);
+      },
+      error: function(xhr, status, error) {
+        alert(response);
+        console.error("Error:", error);
+      }
+    });
+  }
+  function getCsrfToken() {
+    const tokenElement = document.querySelector('meta[name="_csrf"]');
+    return tokenElement ? tokenElement.content : '';
+  }
+</script>
+<!-- custom js -->
+<script src="/js/custom.js"></script>
+<!-- Google Map -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
+<!-- End Google Map -->
+
+</body>
+
+</html>

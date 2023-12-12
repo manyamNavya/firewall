@@ -1,0 +1,1 @@
+docker build -t firewall:v2.0 .
