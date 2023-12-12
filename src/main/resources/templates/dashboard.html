@@ -51,7 +51,7 @@
         <div class="d-flex mx-auto flex-column flex-lg-row align-items-center">
           <ul class="navbar-nav  ">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+              <a class="nav-link" th:href="@{ / }">Dashboard <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" th:href="@{ /rules/ }"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -60,6 +60,9 @@
                 <a class="dropdown-item" th:href="@{ /rules/new/ }">New Rule</a>
                 <a class="dropdown-item" th:href="@{ /rules/ }">View Rules</a>
               </div>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" th:href="@{ /rulesStats/ }">Stats</a>
             </li>
           </ul>
         </div>
@@ -97,11 +100,11 @@
       <div class="col-md-2">
         <div class="card">
           <div class="card-body">
-            <b class="card-title">Blocked IPs</b>
+            <b class="card-title">Source IPs</b>
             <p class="card-text">
-            <h3 class="timer count-title count-number" th:data-to="${ departments }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            <h3 class="timer count-title count-number" th:data-to="${ statistics.getBlockedSourceIps() }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
             </p>
-            <a href="#" class="card-link">list</a>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
             <a th:href="@{/rules/add/}" class="card-link">Add</a>
           </div>
         </div>
@@ -110,11 +113,37 @@
       <div class="col-md-2">
         <div class="card">
           <div class="card-body">
-            <b class="card-title">Ports</b>
+            <b class="card-title">Dest IPs</b>
             <p class="card-text">
-            <h3 class="timer count-title count-number" th:data-to="${ categories }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            <h3 class="timer count-title count-number" th:data-to="${ statistics.getBlockedDestIps() }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
             </p>
-            <a href="#" class="card-link">list</a>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
+            <a th:href="@{/rules/add/}" class="card-link">Add</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="card">
+          <div class="card-body">
+            <b class="card-title">Source Ports</b>
+            <p class="card-text">
+            <h3 class="timer count-title count-number" th:data-to="${ statistics.getBlockedSourcePorts() }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            </p>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
+            <a th:href="@{/rules/add/}" class="card-link">Add</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <div class="card">
+          <div class="card-body">
+            <b class="card-title">Dest Ports</b>
+            <p class="card-text">
+            <h3 class="timer count-title count-number" th:data-to="${ statistics.getBlockedDestPorts() }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            </p>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
             <a th:href="@{/rules/add/}" class="card-link">Add</a>
           </div>
         </div>
@@ -125,9 +154,9 @@
           <div class="card-body">
             <b class="card-title">Protocols</b>
             <p class="card-text">
-            <h3 class="timer count-title count-number" th:data-to="${ items }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            <h3 class="timer count-title count-number" th:data-to="${ statistics.getBlockedProtocols() }" data-speed="1500" align="center" style="padding: 10px;">0</h3>
             </p>
-            <a href="#" class="card-link">list</a>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
             <a th:href="@{/rules/add/}" class="card-link">Add</a>
           </div>
         </div>
@@ -138,25 +167,31 @@
           <div class="card-body">
             <b class="card-title">Rate Limits</b>
             <p class="card-text">
-            <h3 class="timer count-title count-number" th:data-to="${coupons}" data-speed="1500" align="center" style="padding: 10px;">0</h3>
+            <h3 class="timer count-title count-number" th:data-to="${statistics.getLimitedIps()}" data-speed="1500" align="center" style="padding: 10px;">0</h3>
             </p>
-            <a href="#" class="card-link">list</a>
+            <a th:href="@{ /rules/ }" class="card-link">list</a>
             <a th:href="@{/rules/add/}" class="card-link">Add</a>
           </div>
         </div>
       </div>
 
-      <div class="col-md-2">
-        <div class="card">
-          <div class="card-body">
-            <b class="card-title">Countries</b>
-            <p class="card-text">
-            <h3 class="timer count-title count-number" th:data-to="${orders}" data-speed="1500" align="center" style="padding: 10px;">0</h3>
-            </p>
-            <a href="#" class="card-link">list</a>
-            <a th:href="@{/rules/add/}" class="card-link">Add</a>
-          </div>
-        </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row" style="padding: 30px;">
+
+      <div class="col-md-12">
+        <table class="table table-bordered table-striped" align="center">
+          <thead>
+            <tr>
+              <th style="align-content: center;">(Traffic Logs) Timestamp - Reason - Source IP - Destination IP - Protocol</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${logs.size() == 0}"><td style="padding: 50px; align-content: center; color: red;">No Logs Recorded !</td></tr>
+          <tr th:each="log : ${logs}"><td th:text="${log}" style="align-content: center;"></td></tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
@@ -179,7 +214,7 @@
               </h4>
             </a>
             <p>
-              Departmental Store Management System
+              Firewall Management System
             </p>
             <div class="social_box">
               <a href="">

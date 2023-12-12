@@ -9,11 +9,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class BlockedRequestMsg {
+public class Stats {
 
-    String time;
-    String timeStamp;
-    String source;
-    String destination;
-    String protocol;
+    Integer blockedSourceIps;
+    Integer blockedDestIps;
+    Integer blockedSourcePorts;
+    Integer blockedDestPorts;
+    Integer blockedProtocols;
+    Integer limitedIps;
 }

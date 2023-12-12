@@ -86,26 +86,30 @@
       <div class="col-md-12">
         <table class="table table-bordered" th:if="${rules.size() != 0}">
           <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Target</th>
-              <th>Protocol</th>
-              <th>Opt</th>
-              <th>Source</th>
-              <th>Destination</th>
-              <th>Additional Data</th>
-            </tr>
+          <tr>
+            <th>S.No</th>
+            <th>Target</th>
+            <th>Protocol</th>
+            <th>Opt</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Additional Data</th>
+            <th>Packets Blocked</th>
+            <th>Bandwidth (Bytes)</th>
+          </tr>
           </thead>
           <tbody>
-            <tr th:each="rule, rStat : ${rules}">
-              <td th:text="${rStat.index + 1}"></td>
-              <td th:text="${rule.getTarget()}"></td>
-              <td th:text="${rule.getProtocol()}"></td>
-              <td th:text="${rule.getOpt()}"></td>
-              <td th:text="${rule.getSource()}"></td>
-              <td th:text="${rule.getDestination()}"></td>
-              <td th:text="${rule.getAdditionalData()}"></td>
-            </tr>
+          <tr th:each="rule, rStat : ${rules}">
+            <td th:text="${rStat.index + 1}"></td>
+            <td th:text="${rule.getTarget()}"></td>
+            <td th:text="${rule.getProtocol()}"></td>
+            <td th:text="${rule.getOpt()}"></td>
+            <td th:text="${rule.getSource()}"></td>
+            <td th:text="${rule.getDestination()}"></td>
+            <td th:text="${rule.getAdditionalData()}"></td>
+            <td th:text="${rule.getPackets()}"></td>
+            <td th:text="${rule.getBytes()}"></td>
+          </tr>
           </tbody>
         </table>
         <div th:if="${rules.size() == 0}" style="padding: 50px;">

@@ -52,7 +52,7 @@
         <div class="d-flex mx-auto flex-column flex-lg-row align-items-center">
           <ul class="navbar-nav  ">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+              <a class="nav-link" th:href="@{ / }">Dashboard <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" th:href="@{ /rules/ }"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -61,6 +61,9 @@
                 <a class="dropdown-item" th:href="@{ /rules/new/ }">New Rule</a>
                 <a class="dropdown-item" th:href="@{ /rules/ }">View Rules</a>
               </div>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" th:href="@{ /rulesStats/ }">Stats</a>
             </li>
           </ul>
         </div>
@@ -119,13 +122,18 @@
         <div class="form_container">
           <form>
             <fieldset style="border: 3px solid #0e3746; padding: 30px; border-radius: 10px;">
-              <legend style="width: max-content; padding: 10px;">Block Protocol</legend>
+              <legend style="width: max-content; padding: 10px;">Block Port</legend>
               <div class="form-group">
                 <input type="text" placeholder="Enter the Port" id="portNum" required/>
               </div>
               <div class="form-group">
                 <select class="form-control" id="hostTypePort">
                   <option th:each="host : ${hostType}" th:value="${host}" th:text="${host}"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <select class="form-control" id="protPort">
+                  <option th:each="protocol : ${protocols}" th:value="${protocol}" th:text="${protocol}">HTTP</option>
                 </select>
               </div>
               <div class="form-group">
@@ -199,7 +207,7 @@
               </h4>
             </a>
             <p>
-              Departmental Store Management System
+              Firewall Management System
             </p>
             <div class="social_box">
               <a href="">
@@ -389,8 +397,8 @@
 
         jsonData = {
             ipAddress : $("#ipAddrLR").val(),
-            requests : $("#minLR").val(),
-            minutes : $("#reqLR").val()
+            minutes : $("#minLR").val(),
+            requests : $("#reqLR").val()
         }
 
         postRequest("/firewall/limit-requests/", jsonData);
@@ -410,7 +418,8 @@
 
     jsonData = {
       portNumber : $("#portNum").val(),
-      hostType : $("#hostTypePort").val()
+      hostType : $("#hostTypePort").val(),
+      protocol : $("#protPort").val()
     }
 
     postRequest("/firewall/block-port/", jsonData);

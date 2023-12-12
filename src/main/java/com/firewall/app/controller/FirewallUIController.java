@@ -18,12 +18,20 @@ public class FirewallUIController {
     @Autowired
     FirewallService firewallService;
 
+    /**
+     * Renders Admin dashboard
+     */
     @GetMapping("/")
     public String dashboard(Model model) {
 
+        model.addAttribute("statistics", firewallService.getStatistics());
+        model.addAttribute("logs", firewallService.getLogs());
         return "dashboard";
     }
 
+    /**
+     * Renders Page to create New Rules
+     */
     @GetMapping("/rules/new/")
     public String blocker(Model model) {
 
@@ -32,6 +40,10 @@ public class FirewallUIController {
         return "rule-blocker";
     }
 
+
+    /**
+     * Renders the page to view list of rules
+     */
     @GetMapping("/rules/")
     public String rules(Model model) {
         try {
@@ -40,5 +52,19 @@ public class FirewallUIController {
             model.addAttribute("rules", new ArrayList<String[]>());
         }
         return "rules";
+    }
+
+
+    /**
+     * Renders a page to view Stats for all rules
+     */
+    @GetMapping("/rulesStats/")
+    public String rulesStats(Model model) {
+        try {
+            model.addAttribute("rules", firewallService.getRules());
+        } catch(Exception e) {
+            model.addAttribute("rules", new ArrayList<String[]>());
+        }
+        return "rules-stats";
     }
 }

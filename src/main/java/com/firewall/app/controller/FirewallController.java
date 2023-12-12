@@ -17,6 +17,11 @@ public class FirewallController {
     @Autowired
     private FirewallService firewallService;
 
+    /**
+     *
+     * @param blockIPRequest
+     * @return
+     */
     @PostMapping("/block-ip/")
     public ResponseEntity<String> blockIp(@RequestBody BlockIPRequest blockIPRequest) {
 
@@ -31,12 +36,17 @@ public class FirewallController {
         }
     }
 
+    /**
+     *
+     * @param blockPortRequest
+     * @return
+     */
     @PostMapping("/block-port/")
     public ResponseEntity<String> blockPort(@RequestBody BlockPortRequest blockPortRequest) {
 
         try {
             return ResponseEntity.ok(
-                    firewallService.blockPort(blockPortRequest.getPortNumber(), blockPortRequest.getHostType())
+                    firewallService.blockPort(blockPortRequest.getPortNumber(), blockPortRequest.getHostType(), blockPortRequest.getProtocol())
             );
         } catch (Exception e) {
             return ResponseEntity
@@ -45,6 +55,11 @@ public class FirewallController {
         }
     }
 
+    /**
+     *
+     * @param blockProtocolRequest
+     * @return
+     */
     @PostMapping("/block-protocol/")
     public ResponseEntity<String> blockProtocol(@RequestBody BlockProtocolRequest blockProtocolRequest) {
 
@@ -59,6 +74,11 @@ public class FirewallController {
         }
     }
 
+    /**
+     *
+     * @param limitRequests
+     * @return
+     */
     @PostMapping("/limit-requests/")
     public ResponseEntity<String> limitRequests(@RequestBody LimitRequests limitRequests) {
 
@@ -73,6 +93,10 @@ public class FirewallController {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @GetMapping("/getRules/")
     public ResponseEntity getRules() {
 
