@@ -3,18 +3,18 @@ package com.firewall.app.service;
 import com.firewall.app.constants.HostType;
 import com.firewall.app.constants.Protocols;
 import com.firewall.app.model.LimitRequests;
+import com.firewall.app.model.Log;
 import com.firewall.app.model.Rule;
 import com.firewall.app.model.Stats;
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 public class FirewallService {
@@ -30,11 +30,11 @@ public class FirewallService {
     public String blockIP(String ipAddress, HostType hostType) throws IOException, InterruptedException {
 
         if(hostType.equals(HostType.SOURCE)) {
-            executeIPTablesCommand("iptables -A INPUT -s " + ipAddress + " -j DROP -m comment --comment BlockedIP");
-            return executeIPTablesCommand("iptables -A INPUT -s " + ipAddress + " -j LOG --log-prefix FW_BLOCKED_SRC_IP_" + ipAddress + " ");
+            executeIPTablesCommand("iptables -A INPUT -s " + ipAddress + " -j LOG --log-prefix FW_BLOCKED_SRC_IP_" + ipAddress + " ");
+            return executeIPTablesCommand("iptables -A INPUT -s " + ipAddress + " -j DROP -m comment --comment BlockedIP");
         }
-        executeIPTablesCommand("iptables -A INPUT -d " + ipAddress + " -j DROP");
-        return executeIPTablesCommand("iptables -A INPUT -d " + ipAddress + " -j LOG --log-prefix FW_BLOCKED_DST_IP_" + ipAddress + " ");
+        executeIPTablesCommand("iptables -A INPUT -d " + ipAddress + " -j LOG --log-prefix FW_BLOCKED_DST_IP_" + ipAddress + " ");
+        return executeIPTablesCommand("iptables -A INPUT -d " + ipAddress + " -j DROP");
     }
 
     /**
@@ -49,11 +49,12 @@ public class FirewallService {
     public String blockPort(Integer portNumber, HostType hostType, Protocols protocol) throws IOException, InterruptedException {
 
         if(hostType.equals(HostType.SOURCE)) {
-            executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --sport " + portNumber + " -j DROP");
-            return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --sport " + portNumber + " -j LOG --log-prefix FW_BLOCKED_SRC_PORT_" + portNumber + " ");
+
+            executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --sport " + portNumber + " -j LOG --log-prefix FW_BLOCKED_SRC_PORT_" + portNumber + " ");
+            return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --sport " + portNumber + " -j DROP");
         }
-        executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --dport " + portNumber + " -j DROP");
-        return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --dport " + portNumber + " -j LOG --log-prefix FW_BLOCKED_DST_PORT_" + portNumber + " ");
+        executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --dport " + portNumber + " -j LOG --log-prefix FW_BLOCKED_DST_PORT_" + portNumber + " ");
+        return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " --dport " + portNumber + " -j DROP");
     }
 
     /**
@@ -65,8 +66,8 @@ public class FirewallService {
      */
     public String blockProtocol(Protocols protocol) throws IOException, InterruptedException {
 
-        executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " -j DROP");
-        return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " -j LOG --log-prefix FW_BLOCKED_PROTOCOL_" + protocol.getProtocol() + " ");
+        executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " -j LOG --log-prefix FW_BLOCKED_PROTOCOL_" + protocol.getProtocol() + " ");
+        return executeIPTablesCommand("iptables -A INPUT -p " + protocol.getProtocol() + " -j DROP");
     }
 
     /**
@@ -81,8 +82,8 @@ public class FirewallService {
         Integer requests = limitRequests.getRequests();
         Integer minutes = limitRequests.getMinutes();
         String ruleName = "RATE_LIMIT_" + limitRequests.getIpAddress();
-        executeIPTablesCommand("iptables -A INPUT -s " + sourceIP + " -m limit --limit " + requests + "/min -j ACCEPT -m comment --comment " + ruleName);
         executeIPTablesCommand("iptables -A INPUT -s " + sourceIP + " -j LOG --log-prefix FW_BLOCKED_RATE_LIMIT" + sourceIP);
+        executeIPTablesCommand("iptables -A INPUT -s " + sourceIP + " -m limit --limit " + requests + "/min -j ACCEPT -m comment --comment " + ruleName);
         return "Rule Added Successfully !";
     }
 
@@ -90,16 +91,33 @@ public class FirewallService {
      *
      * @return List of Logs recorded using journalctl
      */
-    public List<String> getLogs() {
+    public Map<String, List<Log>> getLogs() {
 
-        List<String> logs = new ArrayList<>();
+        List<Log> blockedTraffic = new ArrayList<>();
+        List<Log> incomingTraffic = new ArrayList<>();
+        List<Log> outgoingTraffic = new ArrayList<>();
+        Map<String, List<Log>> logs = new TreeMap<>();
         try {
-            Process process = Runtime.getRuntime().exec("/bin/bash -c journalctl | grep 'FW_BLOCKED' | awk '{ print $1,$2,$3,$6,$10,$11,$18 }'");
+            Process process = Runtime.getRuntime().exec("cat /var/log/iptables.log");
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                logs.add(line);
+                if(! line.contains("--log-prefix 'FW_BLOCKED_")) {
+                    if(line.contains("FW_BLOCKED_INPUT")) {
+
+                        incomingTraffic.add(parseLog(line));
+                    } else if(line.contains("FW_BLOCKED_OUTPUT")) {
+
+                        outgoingTraffic.add(parseLog(line));
+                    } else {
+
+                        blockedTraffic.add(parseLog(line));
+                    }
+                }
             }
+            logs.put("INPUT", getSubList(incomingTraffic));
+            logs.put("OUTPUT", getSubList(outgoingTraffic));
+            logs.put("BLOCKED", getSubList(blockedTraffic));
             System.out.println("command exited with status : " + process.waitFor());
             return logs;
         } catch (Exception e) {
@@ -213,5 +231,46 @@ public class FirewallService {
         System.out.println("Command exited with code: " + exitCode);
 
         return rules;
+    }
+
+    public void checkAndAddDefaultRules(String type) {
+
+        try {
+            executeCommand("iptables -C " + type + " -j LOG --log-prefix 'FW_BLOCKED_" + type + " '");
+        } catch (Exception e) {
+            try {
+                executeCommand("iptables -A " + type + " -j LOG --log-prefix 'FW_BLOCKED_" + type + " '");
+            } catch (Exception ex) {
+                //TODO: To be Logged - ex.getMessage();
+            }
+        }
+    }
+
+    private Log parseLog(String logData) {
+
+        String[] data = logData.split("\\s+");
+        Log log = new Log();
+        log.setTimestamp(data[0].trim());
+        for(String logChunck : data) {
+            if(logChunck.contains("FW_BLOCKED")) {
+                log.setReason(logChunck.trim());
+            } else if(logChunck.contains("SRC=")) {
+                log.setSource(logChunck.trim().replace("SRC=", ""));
+            } else if(logChunck.contains("DST=")) {
+                log.setDestination(logChunck.trim().replace("DST=", ""));
+            } else if(logChunck.contains("PROTO=")) {
+                log.setProtocol(logChunck.trim().replace("PROTO=", ""));
+            }
+        }
+        return log;
+    }
+
+    private List<Log> getSubList(List<Log> logs) {
+        int size = logs.size() - 1;
+        if(size >= 49) {
+
+            return logs.subList(size - 49, size);
+        }
+        return logs;
     }
 }

@@ -3,6 +3,7 @@ package com.firewall.app.controller;
 import com.firewall.app.constants.HostType;
 import com.firewall.app.constants.Protocols;
 import com.firewall.app.service.FirewallService;
+import com.firewall.app.util.Counter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +47,8 @@ public class FirewallUIController {
      */
     @GetMapping("/rules/")
     public String rules(Model model) {
+
+        model.addAttribute("counter", new Counter());
         try {
             model.addAttribute("rules", firewallService.getRules());
         } catch(Exception e) {
@@ -60,6 +63,8 @@ public class FirewallUIController {
      */
     @GetMapping("/rulesStats/")
     public String rulesStats(Model model) {
+
+        model.addAttribute("counter", new Counter());
         try {
             model.addAttribute("rules", firewallService.getRules());
         } catch(Exception e) {

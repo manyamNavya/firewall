@@ -178,20 +178,117 @@
     </div>
   </div>
   <div class="container">
-    <div class="row" style="padding: 30px;">
+    <div class="row" style=" padding: 5px; padding-top: 30px;">
 
       <div class="col-md-12">
-        <table class="table table-bordered table-striped" align="center">
-          <thead>
-            <tr>
-              <th style="align-content: center;">(Traffic Logs) Timestamp - Reason - Source IP - Destination IP - Protocol</th>
-            </tr>
-          </thead>
-          <tbody>
-          <tr th:if="${logs.size() == 0}"><td style="padding: 50px; align-content: center; color: red;">No Logs Recorded !</td></tr>
-          <tr th:each="log : ${logs}"><td th:text="${log}" style="align-content: center;"></td></tr>
-          </tbody>
-        </table>
+        <div class="border p-3 mb-3">
+          <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#inputlogs" role="button" aria-expanded="false" aria-controls="inputlogs" align="center">INCOMING TRAFFIC LOGS</a></h3>
+
+          <div class="collapse show" id="inputlogs">
+            <div class="py-2" style="height: 400px; overflow-y: scroll;">
+              <table class="table table-bordered table-striped" align="center">
+                <thead>
+                <tr>
+                  <th style="align-content: center;" colspan="5">Incoming Traffic Logs</th>
+                </tr>
+                <tr>
+                  <th style="align-content: center;">Timestamp</th>
+                  <th style="align-content: center;">Source</th>
+                  <th style="align-content: center;">Destination</th>
+                  <th style="align-content: center;">Protocol</th>
+                  <th style="align-content: center;">Reason</th>
+                </tr>
+                </thead>
+                <tbody>
+                  <tr th:if='${logs.get("INPUT").size() == 0}'><td style="padding: 50px; align-content: center; color: red;">No Logs Recorded !</td></tr>
+                  <tr th:each='log : ${logs.get("INPUT")}'>
+                    <td th:text="${log.getTimestamp()}"></td>
+                    <td th:text="${log.getSource()}"></td>
+                    <td th:text="${log.getDestination()}"></td>
+                    <td th:text="${log.getProtocol()}"></td>
+                    <td th:text="${log.getReason()}"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row" style="padding: 5px;">
+
+      <div class="col-md-12">
+        <div class="border p-3 mb-3">
+          <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#outputlogs" role="button" aria-expanded="false" aria-controls="outputlogs" align="center">OUTGOING TRAFFIC LOGS</a></h3>
+
+          <div class="collapse show" id="outputlogs">
+            <div class="py-2" style="height: 400px; overflow: scroll;">
+              <table class="table table-bordered table-striped" align="center">
+                <thead>
+                <tr>
+                  <th style="align-content: center;" colspan="5">Outgoing Traffic Logs</th>
+                </tr>
+                <tr>
+                  <th style="align-content: center;">Timestamp</th>
+                  <th style="align-content: center;">Source</th>
+                  <th style="align-content: center;">Destination</th>
+                  <th style="align-content: center;">Protocol</th>
+                  <th style="align-content: center;">Reason</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if='${logs.get("OUTPUT").size() == 0}'><td style="padding: 50px; align-content: center; color: red;">No Logs Recorded !</td></tr>
+                <tr th:each='log : ${logs.get("OUTPUT")}'>
+                  <td th:text="${log.getTimestamp()}"></td>
+                  <td th:text="${log.getSource()}"></td>
+                  <td th:text="${log.getDestination()}"></td>
+                  <td th:text="${log.getProtocol()}"></td>
+                  <td th:text="${log.getReason()}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="row" style="padding: 5px;">
+
+      <div class="col-md-12">
+        <div class="border p-3 mb-3">
+          <h3 class="h6 mb-0"><a class="d-block" data-toggle="collapse" href="#blockedlogs" role="button" aria-expanded="false" aria-controls="blockedlogs" align="center">BLOCKED TRAFFIC LOGS</a></h3>
+
+          <div class="collapse show" id="blockedlogs">
+            <div class="py-2" style="display: block; min-height: 200px; height: 400px; overflow-y: scroll;">
+              <table class="table table-bordered table-striped" align="center">
+                <thead>
+                <tr>
+                  <th style="align-content: center;" colspan="5">Blocked Traffic Logs</th>
+                </tr>
+                <tr>
+                  <th style="align-content: center;">Timestamp</th>
+                  <th style="align-content: center;">Source</th>
+                  <th style="align-content: center;">Destination</th>
+                  <th style="align-content: center;">Protocol</th>
+                  <th style="align-content: center;">Reason</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if='${logs.get("BLOCKED").size() == 0}'><td style="padding: 50px; align-content: center; color: red;" colspan="5">No Logs Recorded !</td></tr>
+                <tr th:each='log : ${logs.get("BLOCKED")}'>
+                  <td th:text="${log.getTimestamp()}"></td>
+                  <td th:text="${log.getSource()}"></td>
+                  <td th:text="${log.getDestination()}"></td>
+                  <td th:text="${log.getProtocol()}"></td>
+                  <td th:text="${log.getReason()}"></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>

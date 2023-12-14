@@ -66,6 +66,11 @@
             </li>
           </ul>
         </div>
+        <div class="quote_btn-container">
+          <a th:href="@{ /logout }">
+            <i class="fa fa-sign-out" aria-hidden="true"></i>
+          </a>
+        </div>
       </div>
     </nav>
   </div>
@@ -99,7 +104,8 @@
           </tr>
           </thead>
           <tbody>
-          <tr th:each="rule, rStat : ${rules}">
+          <tr th:each="rule, rStat : ${rules}" th:if='${! rule.getTarget().trim().contains("LOG")}'>
+            <b th:with="cnt = ${counter.getIncrAndCnt()}"></b>
             <td th:text="${rStat.index + 1}"></td>
             <td th:text="${rule.getTarget()}"></td>
             <td th:text="${rule.getProtocol()}"></td>
@@ -109,6 +115,9 @@
             <td th:text="${rule.getAdditionalData()}"></td>
             <td th:text="${rule.getPackets()}"></td>
             <td th:text="${rule.getBytes()}"></td>
+          </tr>
+          <tr th:if="${counter.getCountValue() == 0}">
+            <td colspan="9" align="center">No Rules Data Found ! Set the Rules <a th:href="@{/rules/add/}">Here</a> !</td>
           </tr>
           </tbody>
         </table>
